@@ -3,6 +3,7 @@ package org.example;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import org.example.steps.OrderSteps;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,6 +15,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class OrderListTests extends BaseTest {
 
     private final OrderSteps orderSteps = new OrderSteps();
+    private Integer createdOrderTrack; // track для отмены
 
     @Before
     public void setUp() {
@@ -26,5 +28,13 @@ public class OrderListTests extends BaseTest {
                 .statusCode(SC_OK)
                 .body("orders", notNullValue())
                 .body("orders.size()", greaterThan(0));
+    }
+
+    @After
+    public void tearDown() {
+        if (createdOrderTrack != null) {
+            orderSteps.cancelOrder(createdOrderTrack)
+                    .statusCode(SC_OK);
+        }
     }
 }
