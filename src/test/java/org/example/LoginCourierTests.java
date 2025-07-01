@@ -22,12 +22,16 @@ public class LoginCourierTests extends BaseCourierTest {
                 .setPassword(RandomStringUtils.randomAlphabetic(12));
     }
 
+    // Вспомогательный метод для создания тестового курьера
+    private void createTestCourier() {
+        courierSteps.createCourier(courier);
+    }
 
     // Тест "Курьер может авторизоваться":
     @Test
     public void shouldLoginCourierTest() {
 
-        courierSteps.createCourier(courier);
+        createTestCourier();
         courierSteps.loginCourier(courier)
                 .statusCode(SC_OK)
                 .body("id", notNullValue());
@@ -49,7 +53,7 @@ public class LoginCourierTests extends BaseCourierTest {
     // Тест "Не сможешь войти в систему с неправильным паролем":
     @Test
     public void shouldNotLoginWithWrongPassword() {
-        courierSteps.createCourier(courier);
+        createTestCourier();
         String correctPassword = courier.getPassword();
         courier.setPassword("wrongPassword");
         courierSteps.loginCourier(courier)
@@ -61,7 +65,7 @@ public class LoginCourierTests extends BaseCourierTest {
     // Тест "Не сможешь войти в систему с неправильным логином":
     @Test
     public void shouldNotLoginWithWrongLogin() {
-        courierSteps.createCourier(courier);
+        createTestCourier();
         courier.setLogin("wrongLogin");
         courierSteps.loginCourier(courier)
                 .statusCode(SC_NOT_FOUND)
@@ -71,7 +75,7 @@ public class LoginCourierTests extends BaseCourierTest {
     // Тест "Не сможешь войти в систему без логина":
     @Test
     public void shouldNotLoginWithoutLogin() {
-        courierSteps.createCourier(courier);
+        createTestCourier();
         courier.setLogin(null);
         courierSteps.loginCourier(courier)
                 .statusCode(SC_BAD_REQUEST)
@@ -81,7 +85,7 @@ public class LoginCourierTests extends BaseCourierTest {
     // Тест "Не сможешь войти в систему без пароля":
     @Test
     public void shouldNotLoginWithoutPassword() {
-        courierSteps.createCourier(courier);
+        createTestCourier();
         courier.setPassword(null);
         courierSteps.loginCourier(courier)
                 .statusCode(SC_BAD_REQUEST)
