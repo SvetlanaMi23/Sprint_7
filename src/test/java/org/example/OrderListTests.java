@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static io.restassured.RestAssured.filters;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -22,7 +23,7 @@ public class OrderListTests extends BaseTest {
     @Test
     public void shouldReturnOrderList() {
         orderSteps.getOrderList()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("orders", notNullValue())
                 .body("orders.size()", greaterThan(0));
     }

@@ -8,6 +8,7 @@ import org.example.model.Courier;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -28,7 +29,7 @@ public class LoginCourierTests extends BaseCourierTest {
 
         courierSteps.createCourier(courier);
         courierSteps.loginCourier(courier)
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("id", notNullValue());
     }
 
@@ -40,7 +41,7 @@ public class LoginCourierTests extends BaseCourierTest {
                 .setPassword("wrongpass");
 
         courierSteps.loginCourier(nonExistingCourier)
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", is("Учетная запись не найдена"));
     }
 
@@ -52,7 +53,7 @@ public class LoginCourierTests extends BaseCourierTest {
         String correctPassword = courier.getPassword();
         courier.setPassword("wrongPassword");
         courierSteps.loginCourier(courier)
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", is("Учетная запись не найдена"));
         courier.setPassword(correctPassword);
     }
@@ -63,7 +64,7 @@ public class LoginCourierTests extends BaseCourierTest {
         courierSteps.createCourier(courier);
         courier.setLogin("wrongLogin");
         courierSteps.loginCourier(courier)
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", is("Учетная запись не найдена"));
     }
 
@@ -73,7 +74,7 @@ public class LoginCourierTests extends BaseCourierTest {
         courierSteps.createCourier(courier);
         courier.setLogin(null);
         courierSteps.loginCourier(courier)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", is("Недостаточно данных для входа"));
     }
 
@@ -83,7 +84,7 @@ public class LoginCourierTests extends BaseCourierTest {
         courierSteps.createCourier(courier);
         courier.setPassword(null);
         courierSteps.loginCourier(courier)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", is("Недостаточно данных для входа"));
     }
 }

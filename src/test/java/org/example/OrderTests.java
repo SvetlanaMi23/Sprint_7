@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(Parameterized.class)
@@ -47,7 +48,7 @@ public class OrderTests extends BaseTest {
     @Test
     public void shouldCreateOrderWithDifferentColors() {
         orderSteps.createOrder(order)
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("track", notNullValue());
     }
 }

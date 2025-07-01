@@ -8,6 +8,7 @@ import org.example.model.Courier;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 
@@ -27,7 +28,7 @@ public class CourierTests extends BaseCourierTest {
     public void shouldCreateCourierTest() {
         courierSteps
                 .createCourier(courier)
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("ok", is(true));
 
     }
@@ -37,7 +38,7 @@ public class CourierTests extends BaseCourierTest {
     public void shoudNotCreateTwoIdenticalCouriers() {
         courierSteps.createCourier(courier).statusCode(201);
         courierSteps.createCourier(courier)
-                .statusCode(409)
+                .statusCode(SC_CONFLICT)
                 .body("message", startsWith("Этот логин уже используется"));
     }
 
@@ -49,7 +50,7 @@ public class CourierTests extends BaseCourierTest {
         // firstName не устанавливаем — оно null
 
         courierSteps.createCourier(courier)
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("ok", is(true));
     }
 
@@ -59,7 +60,7 @@ public class CourierTests extends BaseCourierTest {
     public void shouldNotCreateCourierWithoutLogin() {
         courier.setLogin(null);
         courierSteps.createCourier(courier)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", is("Недостаточно данных для создания учетной записи"));
     }
 
@@ -68,7 +69,7 @@ public class CourierTests extends BaseCourierTest {
     public void shouldNotCreateCourierWithoutPassword() {
         courier.setPassword(null);
         courierSteps.createCourier(courier)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", is("Недостаточно данных для создания учетной записи"));
     }
 }
