@@ -1,8 +1,12 @@
 package org.example;
 
 
+import io.qameta.allure.Description;
+import io.qameta.allure.junit4.DisplayName;
+import io.restassured.response.ValidatableResponse;
 import org.example.model.Order;
 import org.example.steps.OrderSteps;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,13 +17,17 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(Parameterized.class)
+@DisplayName("Тесты на создание заказов с разными цветами")
 public class OrderTests extends BaseTest {
 
     private final List<String> color;
     private final OrderSteps orderSteps = new OrderSteps();
+    private Order order;
+    private Integer createdOrderTrack;
 
     public OrderTests(List<String> color) {
         this.color = color;
@@ -35,8 +43,6 @@ public class OrderTests extends BaseTest {
         };
     }
 
-    private Order order;
-
     @Before
     public void setUp() {
         order = new Order(
@@ -46,9 +52,20 @@ public class OrderTests extends BaseTest {
     }
 
     @Test
+    @DisplayName("Создание заказа с разными вариантами цвета")
+    @Description("Создаёт заказ с указанным цветом и проверяет, что возвращается трек заказа'")
     public void shouldCreateOrderWithDifferentColors() {
-        orderSteps.createOrder(order)
+        ValidatableResponse response = orderSteps.createOrder(order)
                 .statusCode(SC_CREATED)
                 .body("track", notNullValue());
+        createdOrderTrack = response.extract().path("track");
+    }
+
+    @After
+    public void tearDown() {
+        if (createdOrderTrack != null) {
+            orderSteps.cancelOrder(createdOrderTrack)
+                    .statusCode(SC_OK);
+        }
     }
 }

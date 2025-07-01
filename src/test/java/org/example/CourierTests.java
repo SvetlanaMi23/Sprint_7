@@ -1,8 +1,10 @@
 package org.example;
 
+import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.qameta.allure.Description;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.example.model.Courier;
 import org.junit.Before;
@@ -12,19 +14,21 @@ import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 
+@DisplayName("Тысты курьера")
 public class CourierTests extends BaseCourierTest {
 
     @Before
     public void setUp() {
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
-        courier = new Courier();
-        courier.setLogin(RandomStringUtils.randomAlphabetic(12))
+        courier = new Courier()
+                .setLogin(RandomStringUtils.randomAlphabetic(12))
                 .setPassword(RandomStringUtils.randomAlphabetic(12))
                 .setFirstName(RandomStringUtils.randomAlphabetic(12));
     }
 
-    //Тест "Создание курьера":
     @Test
+    @DisplayName("Создание нового курьера")
+    @Description("Проверяет, что курьер может быть успешно создан при корректных данных")
     public void shouldCreateCourierTest() {
         courierSteps
                 .createCourier(courier)
@@ -33,8 +37,9 @@ public class CourierTests extends BaseCourierTest {
 
     }
 
-    //Тест "Нельзя создать двух одинаковых курьеров":
     @Test
+    @DisplayName("Нельзя создать двух одинаковых курьеров")
+    @Description("Проверяет, что при создании курьера с существующим логином приходит ошибка 409 Conflict")
     public void shoudNotCreateTwoIdenticalCouriers() {
         courierSteps.createCourier(courier).statusCode(201);
         courierSteps.createCourier(courier)
@@ -42,9 +47,9 @@ public class CourierTests extends BaseCourierTest {
                 .body("message", startsWith("Этот логин уже используется"));
     }
 
-
-    //Тест "Курьер создается без заполнения поля firstName":
     @Test
+    @DisplayName("Курьер создается без заполнения поля firstName")
+    @Description("Проверяет, что курьер создается без указания имени, firstName=null")
     public void shouldCreateCourierWithoutFirstName() {
         courier.setFirstName(null);
         // firstName не устанавливаем — оно null
@@ -54,9 +59,9 @@ public class CourierTests extends BaseCourierTest {
                 .body("ok", is(true));
     }
 
-
-    //Тест "Нельзя создать курьера без логина":
     @Test
+    @DisplayName("Нельзя создать курьера без логина")
+    @Description("Проверяет, что при создании курьера без логина возвращается ошибка 400 Bad Request")
     public void shouldNotCreateCourierWithoutLogin() {
         courier.setLogin(null);
         courierSteps.createCourier(courier)
@@ -64,8 +69,9 @@ public class CourierTests extends BaseCourierTest {
                 .body("message", is("Недостаточно данных для создания учетной записи"));
     }
 
-    //Тест "Нельзя создать курьера без пароля":
     @Test
+    @DisplayName("Нельзя создать курьера без пароля")
+    @Description("Проверяет, что при создании курьера без пароля возвращается ошибка 400 Bad Request")
     public void shouldNotCreateCourierWithoutPassword() {
         courier.setPassword(null);
         courierSteps.createCourier(courier)

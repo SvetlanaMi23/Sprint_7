@@ -1,8 +1,10 @@
 package org.example;
 
+import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.qameta.allure.Description;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.example.model.Courier;
 import org.junit.Before;
@@ -12,6 +14,7 @@ import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
+@DisplayName("Тысты авторизации курьера")
 public class LoginCourierTests extends BaseCourierTest {
 
     @Before
@@ -27,18 +30,19 @@ public class LoginCourierTests extends BaseCourierTest {
         courierSteps.createCourier(courier);
     }
 
-    // Тест "Курьер может авторизоваться":
     @Test
+    @DisplayName("Успешная авторизация при валидных значениях логин и пароль")
+    @Description("Проверяет, что при корректных логин и пароль авторизация успешна")
     public void shouldLoginCourierTest() {
-
         createTestCourier();
         courierSteps.loginCourier(courier)
                 .statusCode(SC_OK)
                 .body("id", notNullValue());
     }
 
-    //   Тест "Нельзя авторизоваться под несуществующим пользователем"
     @Test
+    @DisplayName("Нельзя авторизоваться под несуществующим пользователем")
+    @Description("Проверяет, что невозможно авторизоваться с несуществующими логином или паролем")
     public void shouldNotLoginWithNonExistingUser() {
         Courier nonExistingCourier = new Courier()
                 .setLogin("nonexistent_" + RandomStringUtils.randomAlphabetic(6))
@@ -49,9 +53,9 @@ public class LoginCourierTests extends BaseCourierTest {
                 .body("message", is("Учетная запись не найдена"));
     }
 
-
-    // Тест "Не сможешь войти в систему с неправильным паролем":
     @Test
+    @DisplayName("Авторизация с неверным паролем невозможна")
+    @Description("Проверяет, что при неверном пароле авторизация не проходит")
     public void shouldNotLoginWithWrongPassword() {
         createTestCourier();
         String correctPassword = courier.getPassword();
@@ -62,8 +66,9 @@ public class LoginCourierTests extends BaseCourierTest {
         courier.setPassword(correctPassword);
     }
 
-    // Тест "Не сможешь войти в систему с неправильным логином":
     @Test
+    @DisplayName("Авторизация с неверным логином невозможна")
+    @Description("Проверяет, что при неверном логине авторизация не проходит")
     public void shouldNotLoginWithWrongLogin() {
         createTestCourier();
         courier.setLogin("wrongLogin");
@@ -72,8 +77,9 @@ public class LoginCourierTests extends BaseCourierTest {
                 .body("message", is("Учетная запись не найдена"));
     }
 
-    // Тест "Не сможешь войти в систему без логина":
     @Test
+    @DisplayName("Авторизация без логина невозможна")
+    @Description("Проверяет, что без логина система возвращает ошибку 400 Bad Request и сообщением Недостаточно данных для входа")
     public void shouldNotLoginWithoutLogin() {
         createTestCourier();
         courier.setLogin(null);
@@ -82,8 +88,9 @@ public class LoginCourierTests extends BaseCourierTest {
                 .body("message", is("Недостаточно данных для входа"));
     }
 
-    // Тест "Не сможешь войти в систему без пароля":
     @Test
+    @DisplayName("Авторизация без пароля невозможна")
+    @Description("Проверяет, что без пароля система возвращает ошибку 400 Bad Request и сообщением Недостаточно данных для входа")
     public void shouldNotLoginWithoutPassword() {
         createTestCourier();
         courier.setPassword(null);

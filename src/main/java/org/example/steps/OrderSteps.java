@@ -7,11 +7,10 @@ import org.example.model.Order;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.apache.http.HttpStatus.SC_CREATED;
 
 public class OrderSteps {
     private static final String CREATE_ORDER = "/api/v1/orders";
-    private static final String CANCEL_ORDER = "/api/v1/orders/cancel";
+    private static final String CANCEL_ORDER = "/api/v1/orders/cancel?track={track}";
 
     @Step("Создание заказа: {order}")
     public ValidatableResponse createOrder(Order order){
@@ -21,14 +20,6 @@ public class OrderSteps {
                 .when()
                 .post(CREATE_ORDER)
                 .then();
-    }
-
-    @Step("Создание заказа и возврат трека")
-    public int createOrderAndGetTrack(Order order) {
-        return createOrder(order)
-                .statusCode(SC_CREATED) // 201
-                .extract()
-                .path("track");
     }
 
     @Step("Получение списка заказов")
@@ -43,9 +34,11 @@ public class OrderSteps {
     public ValidatableResponse cancelOrder(int track) {
         return given()
                 .header("Content-type", "application/json")
-                .body(Map.of("track", track))
+                .pathParams(Map.of("track", track))
+                .log().all()          // лог запроса
                 .when()
                 .put(CANCEL_ORDER)
-                .then();
+                .then()
+                .log().all();         // лог ответа;
     }
 }
